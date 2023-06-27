@@ -1,8 +1,7 @@
 import { ensureDir } from "https://deno.land/std@0.192.0/fs/ensure_dir.ts"
-import { BASE_URL, fetchOut } from "./fetch.ts"
+import { BASE_URL, Context, fetchOut } from "./fetch.ts"
 
-export async function fetchDenoMini() {
-  const context = {} // miniでは当てはめ要素なし
+export async function fetchDenoMini(context: Context) {
   await ensureDir(".vscode")
   await fetchOut({
     urlRoot: BASE_URL + "deno-base/",

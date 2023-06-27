@@ -2,7 +2,7 @@ import { fetchTransform } from "https://raw.githubusercontent.com/yoko0180/deno-
 
 export const BASE_URL = "https://github.com/yoko0180/make-project/raw/master/templates/"
 
-type Context = Record<string, unknown>
+export type Context = Record<string, unknown>
 type FetchOutSingle = {
   urlRoot: string
   outfilename: string
