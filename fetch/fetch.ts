@@ -28,7 +28,7 @@ async function fetchOutSingle({ url, outfilename, context }: FetchOutSingle) {
 
 async function fetchOutSingleRootUrlBase({ urlRoot, outfilename, context }: FetchOutSingleRootUrlBase) {
   const url = urlRoot + outfilename
-  await fetchOutSingle({url, outfilename, context})
+  await fetchOutSingle({ url, outfilename, context })
 }
 
 export async function fetchOut({ names, urlRoot, context }: FetchOut) {
