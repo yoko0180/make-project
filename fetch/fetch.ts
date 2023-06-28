@@ -1,40 +1,50 @@
+import { join } from "https://deno.land/std@0.192.0/path/mod.ts";
 import { fetchTransform } from "https://raw.githubusercontent.com/yoko0180/deno-fetch-transform/master/fetchTransform.ts"
 
+import { ensureDir } from "https://deno.land/std@0.192.0/fs/ensure_dir.ts"
+import { dirname } from "https://deno.land/std@0.192.0/path/mod.ts";
 export const BASE_URL = "https://github.com/yoko0180/make-project/raw/master/templates/"
 
-export type Context = Record<string, unknown>
+export type Context = Record<string, unknown> & {
+  name: string
+}
+
 type FetchOutSingle = {
   url: string
-  outfilename: string
+  outfilepath: string
   context: Context
 }
 type FetchOutSingleRootUrlBase = {
   urlRoot: string
-  outfilename: string
+  outfilepath: string
   context: Context
 }
 type FetchOut = {
   names: string[]
   urlRoot: string
   context: Context
+  cwd?: string
 }
 
-async function fetchOutSingle({ url, outfilename, context }: FetchOutSingle) {
-  const outfile = await Deno.open(outfilename, { create: true, write: true, truncate: true })
+async function fetchOutSingle({ url, outfilepath, context }: FetchOutSingle) {
+  const outfile = await Deno.open(outfilepath, { create: true, write: true, truncate: true })
   const w = outfile.writable
   await fetchTransform(url, w, context)
   w.close()
 }
 
-async function fetchOutSingleRootUrlBase({ urlRoot, outfilename, context }: FetchOutSingleRootUrlBase) {
-  const url = urlRoot + outfilename
-  await fetchOutSingle({ url, outfilename, context })
+async function fetchOutSingleRootUrlBase({ urlRoot, outfilepath, context }: FetchOutSingleRootUrlBase) {
+  const url = urlRoot + outfilepath
+  await fetchOutSingle({ url, outfilepath, context })
 }
 
-export async function fetchOut({ names, urlRoot, context }: FetchOut) {
+export async function fetchOut({ names, urlRoot, context, cwd = context.name }: FetchOut) {
   const p = []
   for (const outfilename of names) {
-    p.push(fetchOutSingleRootUrlBase({ urlRoot, outfilename, context }))
+    const outfilepath = join(cwd, outfilename)
+    const d = dirname(outfilepath)
+    await ensureDir(d)
+    p.push(fetchOutSingleRootUrlBase({ urlRoot, outfilepath, context }))
   }
   return await Promise.all(p)
 }
