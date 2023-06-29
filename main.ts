@@ -61,6 +61,7 @@ if (import.meta.main) {
       Deno.exit()
     })
     .option("--cwd <cwd>", "実行ディレクトリの指定")
+    .option("--no-vscode", "no open vscode")
     .action(async (ops, createTypeOpt: OptArg, nameOpt: OptArg) => {
       const name = await optCallback(nameOpt, async () => await Input.prompt("name?"))
       await setupDir(name)
@@ -80,6 +81,7 @@ if (import.meta.main) {
       }
       await dispatchAction({ key: createType, fetchArg })
       await displayResult(cwd)
+      if (ops.vscode)
       await startVSCode([name])
     })
     .parse(Deno.args)
