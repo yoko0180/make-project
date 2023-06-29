@@ -1,6 +1,6 @@
-import { BASE_URL, Context, fetchOut } from "./fetch.ts"
+import { BASE_URL, FetchArg, fetchOut } from "./fetch.ts"
 
-export async function fetchDenoMini(context: Context) {
+export async function fetchDenoMini(fetchArg: FetchArg) {
   await fetchOut({
     urlRoot: BASE_URL + "deno-base/",
     // prettier-ignore
@@ -11,6 +11,6 @@ export async function fetchDenoMini(context: Context) {
       "main_test.ts",
       "main.ts",
     ],
-    context,
+    fetchArg,
   })
 }

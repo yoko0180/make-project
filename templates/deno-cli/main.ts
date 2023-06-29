@@ -5,10 +5,10 @@ import { Select } from "https://deno.land/x/cliffy@v0.25.7/prompt/select.ts"
 // Learn more at https://deno.land/manual/examples/module_metadata#concepts
 if (import.meta.main) {
   await new Command()
-    .name("cliffy")
+    .name("{{name}}")
     .version("0.1.0")
     .description("Command line framework for Deno")
-    .action(async (ops, ...args) => {
+    .action(async (_ops, ..._args) => {
       const createType: string = await Select.prompt({
         message: "Create a Type",
         options: [

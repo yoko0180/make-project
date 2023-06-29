@@ -1,6 +1,6 @@
-import { BASE_URL, Context, fetchOut } from "./fetch.ts"
+import { BASE_URL, FetchArg, fetchOut } from "./fetch.ts"
 
-export async function fetchDenoCli(context: Context) {
+export async function fetchDenoCli(fetchArg: FetchArg) {
   await fetchOut({
     urlRoot: BASE_URL + "deno-base/",
     // prettier-ignore
@@ -10,7 +10,7 @@ export async function fetchDenoCli(context: Context) {
       "main_bench.ts",
       "main_test.ts",
     ],
-    context,
+    fetchArg
   })
   await fetchOut({
     urlRoot: BASE_URL + "deno-cli/",
@@ -18,6 +18,6 @@ export async function fetchDenoCli(context: Context) {
     names: [
       "main.ts",
     ],
-    context,
+    fetchArg
   })
 }

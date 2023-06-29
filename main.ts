@@ -6,9 +6,9 @@ import { fetchDenoMini } from "./fetch/deno-mini.ts"
 import { fetchDenoCli } from "./fetch/deno-cli.ts"
 import { ensureDir } from "https://deno.land/std@0.192.0/fs/ensure_dir.ts"
 import { Input } from "https://deno.land/x/cliffy@v0.25.7/prompt/mod.ts"
-import { Context } from "./fetch/fetch.ts"
+import { Context, FetchArg } from "./fetch/fetch.ts"
 
-type Action = (context: Context) => Promise<void>
+type Action = (fetchArg: FetchArg) => Promise<void>
 type ActionMap = {
   [key: string]: Action
 }
@@ -19,22 +19,21 @@ const actionMap: ActionMap = {
   "deno-cli": (context) => fetchDenoCli(context),
 }
 
-async function displayResult() {
-  for await (const entry of walk(".")) {
+async function displayResult(cwd: string) {
+  for await (const entry of walk(cwd)) {
     console.log(entry.path)
   }
 }
 
 type DispatchAction = {
   key: string
-  context: Context
+  fetchArg: FetchArg
 }
 
-async function dispatchAction({ key, context }: DispatchAction) {
+async function dispatchAction({ key, fetchArg }: DispatchAction) {
   const action = actionMap[key]
   if (!action) return
-  // await setupDir(context.name)
-  await action(context)
+  await action(fetchArg)
 }
 
 async function setupDir(name: string) {
@@ -61,7 +60,8 @@ if (import.meta.main) {
       console.log(err.message);
       Deno.exit()
     })
-    .action(async (_ops, createTypeOpt: OptArg, nameOpt: OptArg) => {
+    .option("--cwd <cwd>", "実行ディレクトリの指定")
+    .action(async (ops, createTypeOpt: OptArg, nameOpt: OptArg) => {
       const name = await optCallback(nameOpt, async () => await Input.prompt("name?"))
       await setupDir(name)
       const createType = await optCallback(
@@ -73,8 +73,13 @@ if (import.meta.main) {
           })
       )
 
-      await dispatchAction({ key: createType, context: { name } })
-      await displayResult()
+      const cwd = ops.cwd || "."
+      const fetchArg = {
+        cwd,
+        context: {name}
+      }
+      await dispatchAction({ key: createType, fetchArg })
+      await displayResult(cwd)
       await startVSCode([name])
     })
     .parse(Deno.args)
