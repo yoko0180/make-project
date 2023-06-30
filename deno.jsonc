@@ -1,6 +1,8 @@
 {
   "tasks": {
-    "dev": "deno run --watch main.ts"
+    "dev": "deno run --watch main.ts",
+    "testsub": "deno test -A sub_test.ts",
+    "testmain": "deno test -A main_test.ts"
   },
   "test": {
     "exclude": ["templates"]
