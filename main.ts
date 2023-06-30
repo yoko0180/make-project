@@ -4,7 +4,6 @@ import { walk } from "https://deno.land/std@0.192.0/fs/walk.ts"
 import { startVSCode } from "./vscode.ts"
 import { fetchDenoMini } from "./fetch/deno-mini.ts"
 import { fetchDenoCli } from "./fetch/deno-cli.ts"
-import { ensureDir } from "https://deno.land/std@0.192.0/fs/ensure_dir.ts"
 import { Input } from "https://deno.land/x/cliffy@v0.25.7/prompt/mod.ts"
 import { FetchArg } from "./fetch/fetch.ts"
 import { join } from "https://deno.land/std@0.192.0/path/mod.ts";
@@ -37,12 +36,6 @@ async function dispatchAction({ key, fetchArg }: DispatchAction) {
   await action(fetchArg)
 }
 
-async function setupDir(name: string) {
-  const exists = !!(await Deno.stat(name).catch(() => false))
-  if (exists) throw Error("ディレクトリがすでに存在します：" + name)
-  await ensureDir(name)
-}
-
 type OptArg = string | undefined
 
 async function optCallback(opt: OptArg, cb: () => Promise<string>) {
@@ -57,7 +50,6 @@ if (import.meta.main) {
     .version("0.1.0")
     .description("プロジェクトフォルダを作成する | make project | mp")
     .error((err, _cmd) => {
-      // console.log("* error handle");
       console.log(err.message);
       Deno.exit()
     })
@@ -75,7 +67,6 @@ if (import.meta.main) {
       )
 
       const cwd = ops.cwd ? join(ops.cwd, name) : name 
-      // await setupDir(join(cwd, name))
       const fetchArg = {
         cwd,
         context: {name}
@@ -86,13 +77,4 @@ if (import.meta.main) {
       await startVSCode([name])
     })
     .parse(Deno.args)
-
-  // try {
-  //   await cmd.parse(Deno.args)
-  //   console.log("* after parse");
-    
-  // } catch (error) {
-  //   console.log("*****e");
-  //   // console.error(error)
-  // }
 }
