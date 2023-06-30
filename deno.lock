@@ -110,6 +110,7 @@
     "https://esm.sh/handlebars@4.7.7": "e1ada3470506e6b2bc1e936c5b3465913e2d06af0fe27538a1da3d72f71fb61a",
     "https://esm.sh/v126/handlebars@4.7.7/denonext/handlebars.mjs": "1965b3d0852d8b0f4074a33b32b89f90198206586d8e5b05579ea76564905d69",
     "https://esm.sh/v126/source-map@0.6.1/denonext/source-map.mjs": "ccff3bb06dea7c01a2c83cf12113697592e418fd06b55ae2bb4cb0a4e51a98b8",
-    "https://raw.githubusercontent.com/yoko0180/deno-fetch-transform/master/fetchTransform.ts": "7320e6e2c5a62199ad47347f04d67681a160426a0b0be015b574780b88a5f398"
+    "https://raw.githubusercontent.com/yoko0180/deno-fetch-transform/master/fetchTransform.ts": "7320e6e2c5a62199ad47347f04d67681a160426a0b0be015b574780b88a5f398",
+    "https://raw.githubusercontent.com/yoko0180/deno-fetch-transform/v2/fetchTransform.ts": "b76674a5bfa5eda99d74b3602c62b39db84ff4160b148217e28d99d59609dafa"
   }
 }

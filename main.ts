@@ -6,7 +6,8 @@ import { fetchDenoMini } from "./fetch/deno-mini.ts"
 import { fetchDenoCli } from "./fetch/deno-cli.ts"
 import { ensureDir } from "https://deno.land/std@0.192.0/fs/ensure_dir.ts"
 import { Input } from "https://deno.land/x/cliffy@v0.25.7/prompt/mod.ts"
-import { Context, FetchArg } from "./fetch/fetch.ts"
+import { FetchArg } from "./fetch/fetch.ts"
+import { join } from "https://deno.land/std@0.192.0/path/mod.ts";
 
 type Action = (fetchArg: FetchArg) => Promise<void>
 type ActionMap = {
@@ -32,7 +33,7 @@ type DispatchAction = {
 
 async function dispatchAction({ key, fetchArg }: DispatchAction) {
   const action = actionMap[key]
-  if (!action) return
+  if (!action) throw new Error("アクションタイプがありません: " + key)
   await action(fetchArg)
 }
 
@@ -64,7 +65,6 @@ if (import.meta.main) {
     .option("--no-vscode", "no open vscode")
     .action(async (ops, createTypeOpt: OptArg, nameOpt: OptArg) => {
       const name = await optCallback(nameOpt, async () => await Input.prompt("name?"))
-      await setupDir(name)
       const createType = await optCallback(
         createTypeOpt,
         async () =>
@@ -74,7 +74,8 @@ if (import.meta.main) {
           })
       )
 
-      const cwd = ops.cwd || "."
+      const cwd = ops.cwd ? join(ops.cwd, name) : name 
+      // await setupDir(join(cwd, name))
       const fetchArg = {
         cwd,
         context: {name}

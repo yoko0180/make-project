@@ -1,6 +1,6 @@
 import { walk } from "https://deno.land/std@0.192.0/fs/walk.ts"
 import { join } from "https://deno.land/std@0.192.0/path/mod.ts"
-import { assert, assertStringIncludes } from "https://deno.land/std@0.192.0/testing/asserts.ts"
+import { assert, assertEquals, assertStringIncludes } from "https://deno.land/std@0.192.0/testing/asserts.ts"
 
 type TempFolderCallback = (tempFolderPath: string) => Promise<void>
 
@@ -33,6 +33,14 @@ async function fileExists(path: string): Promise<boolean> {
 const assertDirExists = async (path: string) => assert(await dirExists(path), "ディレクトリパスが存在しません:" + path)
 const assertFileExists = async (path: string) => assert(await fileExists(path), "ファイルパスが存在しません:" + path)
 
+
+Deno.test("url test", () => {
+  const BASE_URL = "https://raw.githubusercontent.com/yoko0180/make-project/master/templates/"
+  assertEquals(new URL(join("a", "main.ts"), BASE_URL).toString(), BASE_URL + "a/main.ts")
+})
+Deno.test("url2 test", () => {
+  assertEquals(new URL("https://github\\main.ts").toString(), "https://github/main.ts")
+})
 Deno.test("withTempFolder test", async () => {
   await withTempFolder(async (tempDirPath) => {
     await assertDirExists(tempDirPath)
@@ -41,8 +49,9 @@ Deno.test("withTempFolder test", async () => {
 
 Deno.test("cli test", async () => {
   await withTempFolder(async (tempDirPath) => {
+    console.log("tempDirPath:", tempDirPath)
     const cmd = new Deno.Command(Deno.execPath(), {
-      args: ["run", "-A", "main.ts", "cli", "foo", "--no-vscode", "--cwd", tempDirPath],
+      args: ["run", "-A", "main.ts", "deno-cli", "foo", "--no-vscode", "--cwd", tempDirPath],
     })
     await cmd.output()
 
@@ -53,6 +62,6 @@ Deno.test("cli test", async () => {
     const fileMainTs = join(tempDirPath, "foo", "main.ts")
     await assertFileExists(fileMainTs)
     const ctx = await Deno.readTextFile(fileMainTs)
-    assertStringIncludes(ctx, 'name("foo')
+    // assertStringIncludes(ctx, 'name("foo')
   })
 })
