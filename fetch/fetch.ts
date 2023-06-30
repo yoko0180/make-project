@@ -19,11 +19,7 @@ type FetchOutSingle = {
   outfilepath: string
   context: Context
 }
-type FetchOutSingleRootUrlBase = {
-  urlRoot: string
-  outfilepath: string
-  fetchArg: FetchArg
-}
+
 type FetchOut = {
   names: string[]
   urlRoot: string
@@ -37,20 +33,14 @@ async function fetchOutSingle({ url, outfilepath, context }: FetchOutSingle) {
   w.close()
 }
 
-async function fetchOutSingleRootUrlBase({ urlRoot, outfilepath, fetchArg }: FetchOutSingleRootUrlBase) {
-  const url = urlRoot + outfilepath
-  await fetchOutSingle({ url, outfilepath, context })
-}
-
 export async function fetchOut({ names, urlRoot, fetchArg }: FetchOut) {
   const p = []
   const { cwd, context } = fetchArg
-  for (const outfilename of names) {
-    const outfilepath = join(cwd, outfilename)
+  for (const name of names) {
+    const outfilepath = join(cwd, name)
     const d = dirname(outfilepath)
     await ensureDir(d)
-    // p.push(fetchOutSingleRootUrlBase({ urlRoot, outfilepath, fetchArg }))
-    const url = urlRoot + outfilename
+    const url = urlRoot + name
     p.push(fetchOutSingle({ url, outfilepath, context }))
   }
   return await Promise.all(p)
