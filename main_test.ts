@@ -13,7 +13,6 @@ async function toArray(it: AsyncIterableIterator<WalkEntry>) {
 
 Deno.test("cli test", async () => {
   await withTempFolder(async (tempDirPath) => {
-    console.log("tempDirPath:", tempDirPath)
     const cmd = new Deno.Command(Deno.execPath(), {
       args: ["run", "-A", "main.ts", "deno-cli", "foo", "--no-vscode", "--cwd", tempDirPath],
     })
@@ -22,7 +21,7 @@ Deno.test("cli test", async () => {
     const fullItems = await toArray(walk(tempDirPath, { includeDirs: false }))
     const items = fullItems.map((i) => i.replace(tempDirPath, ""))
     const expectItems = [
-      "\\foo\\.vscode\\settings1.json",
+      "\\foo\\.vscode\\settings.json",
       "\\foo\\deno.jsonc",
       "\\foo\\main.ts",
       "\\foo\\main_bench.ts",
@@ -30,6 +29,7 @@ Deno.test("cli test", async () => {
     ]
     assertEquals(items.length, expectItems.length)
     assertArrayIncludes(items, expectItems)
+
 
     await assertDirExists(join(tempDirPath, "foo"))
     const fileMainTs = join(tempDirPath, "foo", "main.ts")

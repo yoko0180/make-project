@@ -39,7 +39,6 @@ async function fetchOutSingle({ url, outfilepath, context }: FetchOutSingle) {
 
 async function fetchOutSingleRootUrlBase({ urlRoot, outfilepath, fetchArg }: FetchOutSingleRootUrlBase) {
   const url = urlRoot + outfilepath
-  console.log("url:", url)
   await fetchOutSingle({ url, outfilepath, context })
 }
 
@@ -48,7 +47,6 @@ export async function fetchOut({ names, urlRoot, fetchArg }: FetchOut) {
   const { cwd, context } = fetchArg
   for (const outfilename of names) {
     const outfilepath = join(cwd, outfilename)
-    console.log("outfilepath:", outfilepath)
     const d = dirname(outfilepath)
     await ensureDir(d)
     // p.push(fetchOutSingleRootUrlBase({ urlRoot, outfilepath, fetchArg }))
