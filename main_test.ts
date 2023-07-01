@@ -13,28 +13,31 @@ async function toArray(it: AsyncIterableIterator<WalkEntry>) {
 
 Deno.test("cli test", async () => {
   await withTempFolder(async (tempDirPath) => {
+    const NAME = "foo"
     const cmd = new Deno.Command(Deno.execPath(), {
-      args: ["run", "-A", "main.ts", "deno-cli", "foo", "--no-vscode", "--cwd", tempDirPath],
+      args: ["run", "-A", "main.ts", "deno-cli", NAME, "--no-vscode", "--cwd", tempDirPath],
     })
     await cmd.output()
 
     const fullItems = await toArray(walk(tempDirPath, { includeDirs: false }))
     const items = fullItems.map((i) => i.replace(tempDirPath, ""))
+    const DIRNAME = NAME + "-cli"
+    const PATH_DIRNAME = "\\" + DIRNAME
     const expectItems = [
-      "\\foo\\.vscode\\settings.json",
-      "\\foo\\deno.jsonc",
-      "\\foo\\main.ts",
-      "\\foo\\main_bench.ts",
-      "\\foo\\main_test.ts",
+      PATH_DIRNAME + "\\.vscode\\settings.json",
+      PATH_DIRNAME + "\\deno.jsonc",
+      PATH_DIRNAME + "\\main.ts",
+      PATH_DIRNAME + "\\main_bench.ts",
+      PATH_DIRNAME + "\\main_test.ts",
     ]
     assertEquals(items.length, expectItems.length)
     assertArrayIncludes(items, expectItems)
 
 
-    await assertDirExists(join(tempDirPath, "foo"))
-    const fileMainTs = join(tempDirPath, "foo", "main.ts")
+    await assertDirExists(join(tempDirPath, DIRNAME))
+    const fileMainTs = join(tempDirPath, DIRNAME, "main.ts")
     await assertFileExists(fileMainTs)
     const ctx = await Deno.readTextFile(fileMainTs)
-    assertStringIncludes(ctx, 'name("foo')
+    assertStringIncludes(ctx, `name("${NAME}"`)
   })
 })
