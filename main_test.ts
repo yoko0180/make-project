@@ -1,6 +1,10 @@
 import { WalkEntry, walk } from "https://deno.land/std@0.192.0/fs/walk.ts"
 import { join } from "https://deno.land/std@0.192.0/path/mod.ts"
-import { assertArrayIncludes, assertEquals, assertStringIncludes } from "https://deno.land/std@0.192.0/testing/asserts.ts"
+import {
+  assertArrayIncludes,
+  assertEquals,
+  assertStringIncludes,
+} from "https://deno.land/std@0.192.0/testing/asserts.ts"
 import { withTempFolder, assertDirExists, assertFileExists } from "./sub_test.ts"
 
 async function toArray(it: AsyncIterableIterator<WalkEntry>) {
@@ -11,7 +15,7 @@ async function toArray(it: AsyncIterableIterator<WalkEntry>) {
   return arr
 }
 
-Deno.test("cli test", async () => {
+Deno.test("cli test", async (t) => {
   await withTempFolder(async (tempDirPath) => {
     const NAME = "foo"
     const cmd = new Deno.Command(Deno.execPath(), {
@@ -30,14 +34,23 @@ Deno.test("cli test", async () => {
       PATH_DIRNAME + "\\main_bench.ts",
       PATH_DIRNAME + "\\main_test.ts",
     ]
-    assertEquals(items.length, expectItems.length)
-    assertArrayIncludes(items, expectItems)
+    await t.step("name + -cli ディレクトリが生成されること", async () => {
+      await assertDirExists(join(tempDirPath, DIRNAME))
+    })
 
+    await t.step("生成ファイル数", () => {
+      assertEquals(items.length, expectItems.length)
+    })
 
-    await assertDirExists(join(tempDirPath, DIRNAME))
-    const fileMainTs = join(tempDirPath, DIRNAME, "main.ts")
-    await assertFileExists(fileMainTs)
-    const ctx = await Deno.readTextFile(fileMainTs)
-    assertStringIncludes(ctx, `name("${NAME}"`)
+    await t.step("生成ファイルリストの検証", () => {
+      assertArrayIncludes(items, expectItems)
+    })
+
+    await t.step("nameがテンプレートに当てはめられていること", async () => {
+      const fileMainTs = join(tempDirPath, DIRNAME, "main.ts")
+      await assertFileExists(fileMainTs)
+      const ctx = await Deno.readTextFile(fileMainTs)
+      assertStringIncludes(ctx, `name("${NAME}"`)
+    })
   })
 })
