@@ -1,10 +1,6 @@
 import { BASE_URL, FetchArg, fetchOut } from "./fetch.ts"
 
-export async function fetchDenoCli(xfetchArg: FetchArg) {
-  const fetchArg = {
-    ...xfetchArg,
-    cwd: xfetchArg.cwd + "-cli"
-  }
+export async function fetchDenoCli(fetchArg: FetchArg) {
   await fetchOut({
     urlRoot: BASE_URL + "deno-base/",
     // prettier-ignore

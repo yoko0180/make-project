@@ -67,7 +67,7 @@ if (import.meta.main) {
           })
       )
 
-      const cwd = ops.cwd ? join(ops.cwd, name) : name 
+      const cwd = ( ops.cwd ? join(ops.cwd, name) : name ) + (createType === "deno-cli" ? "-cli" : "")
       const fetchArg = {
         cwd,
         context: {name}
@@ -75,7 +75,7 @@ if (import.meta.main) {
       await dispatchAction({ key: createType, fetchArg })
       await displayResult(cwd)
       if (ops.vscode)
-      await startVSCode([name])
+      await startVSCode([cwd])
     })
     .parse(Deno.args)
 }
