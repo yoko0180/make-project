@@ -75,7 +75,7 @@ if (import.meta.main) {
       await dispatchAction({ key: createType, fetchArg })
       await displayResult(cwd)
       if (ops.vscode)
-      await startVSCode([cwd])
+      await startVSCode([cwd, "-g", join(cwd, "main.ts")])
     })
     .parse(Deno.args)
 }
