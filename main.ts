@@ -49,6 +49,7 @@ if (import.meta.main) {
     .arguments("[type:string] [name:string]")
     .version("0.1.0")
     .description("プロジェクトフォルダを作成する | make project | mp")
+    .example("deno-cli foo", "foo-cliフォルダを作成する")
     .error((err, _cmd) => {
       console.log(err.message);
       Deno.exit()
