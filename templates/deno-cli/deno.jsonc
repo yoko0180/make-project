@@ -1,6 +1,6 @@
 {
   "tasks": {
     "dev": "deno run --watch main.ts",
-    "install": "deno install -Afn {{binName}} main.ts"
-  }
+    "install": "deno install -Afn {{binName}} --import-map=import_map.jsonc main.ts"
+    }
 }

@@ -1,11 +1,11 @@
 
-import { Command } from "https://deno.land/x/cliffy@v0.25.7/command/mod.ts"
-import { Select } from "https://deno.land/x/cliffy@v0.25.7/prompt/select.ts"
+import { Command } from "cliffy/command/mod.ts"
+import { Select } from "cliffy/prompt/select.ts"
 
 // Learn more at https://deno.land/manual/examples/module_metadata#concepts
 if (import.meta.main) {
   await new Command()
-    .name("{{name}}")
+    .name("{{binName}}")
     .version("0.1.0")
     .description("Command line framework for Deno")
     .action(async (_ops, ..._args) => {

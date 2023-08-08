@@ -17,6 +17,7 @@ export async function fetchDenoCli(fetchArgOpt: FetchArg) {
       ".vscode/settings.json",
       "main_bench.ts",
       "main_test.ts",
+      "import_map.jsonc",
     ],
     fetchArg
   })
