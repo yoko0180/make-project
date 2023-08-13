@@ -43,5 +43,5 @@ fn print_path(filter: Option<&str>) {
 
 #[test]
 fn test() {
-    assert!(1, 1);
+    assert_eq!(1, 1);
 }
