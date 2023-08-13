@@ -7,6 +7,7 @@ import { fetchDenoCli } from "./fetch/deno-cli.ts"
 import { Input } from "https://deno.land/x/cliffy@v0.25.7/prompt/mod.ts"
 import { FetchArg } from "./fetch/fetch.ts"
 import { join } from "https://deno.land/std@0.192.0/path/mod.ts";
+import { fetchRustCli } from "./fetch/rust-cli.ts";
 
 type Action = (fetchArg: FetchArg) => Promise<void>
 type ActionMap = {
@@ -17,6 +18,7 @@ type CreateType = "deno-mini" | "deno-cli"
 const actionMap: ActionMap = {
   "deno-mini": (context) => fetchDenoMini(context),
   "deno-cli": (context) => fetchDenoCli(context),
+  "rust-cli": (context) => fetchRustCli(context),
 }
 
 async function displayResult(cwd: string) {
