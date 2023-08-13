@@ -6,36 +6,37 @@ import { fetchDenoMini } from "./fetch/deno-mini.ts"
 import { fetchDenoCli } from "./fetch/deno-cli.ts"
 import { Input } from "https://deno.land/x/cliffy@v0.25.7/prompt/mod.ts"
 import { FetchArg } from "./fetch/fetch.ts"
-import { join } from "https://deno.land/std@0.192.0/path/mod.ts";
-import { fetchRustCli } from "./fetch/rust-cli.ts";
+import { join } from "https://deno.land/std@0.192.0/path/mod.ts"
+import { fetchRustCli } from "./fetch/rust-cli.ts"
 
-type Action = (fetchArg: FetchArg) => Promise<void>
+type FetchAction = (fetchArg: FetchArg) => Promise<void>
+type Action = {
+  fetchAction: FetchAction
+  openSrc: string
+}
 type ActionMap = {
   [key: string]: Action
 }
-type CreateType = "deno-mini" | "deno-cli"
 
 const actionMap: ActionMap = {
-  "deno-mini": (context) => fetchDenoMini(context),
-  "deno-cli": (context) => fetchDenoCli(context),
-  "rust-cli": (context) => fetchRustCli(context),
+  "deno-mini": {
+    fetchAction: (farg) => fetchDenoMini(farg),
+    openSrc: "main.ts",
+  },
+  "deno-cli": {
+    fetchAction: (farg) => fetchDenoCli(farg),
+    openSrc: "main.ts",
+  },
+  "rust-cli": {
+    fetchAction: (farg) => fetchRustCli(farg),
+    openSrc: "src/main.rs",
+  },
 }
 
 async function displayResult(cwd: string) {
   for await (const entry of walk(cwd)) {
     console.log(entry.path)
   }
-}
-
-type DispatchAction = {
-  key: string
-  fetchArg: FetchArg
-}
-
-async function dispatchAction({ key, fetchArg }: DispatchAction) {
-  const action = actionMap[key]
-  if (!action) throw new Error("アクションタイプがありません: " + key)
-  await action(fetchArg)
 }
 
 type OptArg = string | undefined
@@ -53,7 +54,7 @@ if (import.meta.main) {
     .description("プロジェクトフォルダを作成する | make project | mp")
     .example("$mp deno-cli foo", `foo-cliフォルダを作成する`)
     .error((err, _cmd) => {
-      console.log(err.message);
+      console.log(err.message)
       Deno.exit()
     })
     .option("--cwd <cwd>", "実行ディレクトリの指定")
@@ -69,15 +70,18 @@ if (import.meta.main) {
           })
       )
 
-      const cwd = ( ops.cwd ? join(ops.cwd, name) : name ) + (createType === "deno-cli" ? "-cli" : "")
+      const cwd = (ops.cwd ? join(ops.cwd, name) : name) + (createType === "deno-cli" ? "-cli" : "")
       const fetchArg = {
         cwd,
-        context: {name}
+        context: { name },
       }
-      await dispatchAction({ key: createType, fetchArg })
+
+      const action = actionMap[createType]
+      if (!action) throw new Error("アクションタイプがありません: " + createType)
+      await action.fetchAction(fetchArg)
+
       await displayResult(cwd)
-      if (ops.vscode)
-      await startVSCode([cwd, "-g", join(cwd, "main.ts")])
+      if (ops.vscode) await startVSCode([cwd, "-g", join(cwd, action.openSrc)])
     })
     .parse(Deno.args)
 }
